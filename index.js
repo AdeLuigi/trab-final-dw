@@ -1,4 +1,3 @@
-import {Client} from 'whatsapp-web.js';
 import Papa from 'papaparse';
 import fs from 'fs'
 
@@ -8,48 +7,45 @@ fs.readFile('beneficio.csv', 'utf8', (err, data) => {
     return;
   }
 
-let PETI = 0;
-let AE = 0;
-let BF = 0;
-let AB = 0;
-let BPC = 0;
+let dadosTratados
 
 Papa.parse(data, {
     complete: function(results) {
-        results.data.forEach(element => {
-            if(element[2] == 'PETI'){
-                PETI += convertMoneyToFloat(element[1])
+        results.data.forEach((element, index) => {
+            if (element[1] == undefined) {
+              return
             }
-            if(element[2] == 'Auxílio Emergencial'){
-                AE += convertMoneyToFloat(element[1])
-            }
-            if(element[2] == 'Bolsa Família'){
-                BF += convertMoneyToFloat(element[1])
-            }
-            if(element[2] == 'BPC'){
-                BPC += convertMoneyToFloat(element[1])
-            }
-            if(element[2] == 'Auxílio Brasil'){
-                AB += convertMoneyToFloat(element[1])
-            }
+            results.data[index][0] = convertDate(element[0])
+            results.data[index][1] = convertMoneyToFloat(element[1])
         });
-      console.log("total dos valores recebidos", {
-        PETI,
-        auxilioEmergencial: AE,
-        bolsaFamilia: BF,
-        BPC,
-        auxilioBrasil:AB
-      });
+
+        results.data[0][1] = 'Valor Transferido'
+
+        const opcoes = {
+          delimiter: ',', // Delimitador de campo
+          newline: '\n' // Caractere de nova linha
+        };          
+
+        dadosTratados = Papa.unparse(results.data, opcoes);
+
+        fs.writeFileSync('dados.csv', dadosTratados, 'utf8');
+      console.log("total dos valores recebidos", results.data);
     }
   });
 });
 
 function convertMoneyToFloat(money) {
-    // Remover pontos e substituir vírgulas por pontos
     const cleanedMoney = money.replace(/\./g, '').replace(',', '.');
-  
-    // Converter para float
     const floatValue = parseFloat(cleanedMoney);
-  
+
     return floatValue;
-  }
+}
+
+function convertDate(dateString) {
+  var parts = dateString.split('/');
+  var month = parts[0];
+  var year = parts[1];
+  var convertedDate = year + '-' + month;
+
+  return convertedDate;
+}
