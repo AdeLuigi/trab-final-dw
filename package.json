@@ -6,5 +6,8 @@
     "nodemon": "^2.0.20",
     "papaparse": "^5.4.1",
     "whatsapp-web.js": "^1.19.5"
+  },
+  "scripts": {
+    "start" : "yarn node ./src/index.js"
   }
 }

@@ -1,7 +1,7 @@
 import Papa from 'papaparse';
 import fs from 'fs'
 
-fs.readFile('beneficio.csv', 'utf8', (err, data) => {
+fs.readFile('./src/beneficio.csv', 'utf8', (err, data) => {
   if (err) {
     console.error(err);
     return;
@@ -28,7 +28,7 @@ Papa.parse(data, {
 
         dadosTratados = Papa.unparse(results.data, opcoes);
 
-        fs.writeFileSync('dados.csv', dadosTratados, 'utf8');
+        fs.writeFileSync('./src/dados.csv', dadosTratados, 'utf8');
       console.log("total dos valores recebidos", results.data);
     }
   });
